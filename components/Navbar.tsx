@@ -1,8 +1,12 @@
-import {useNavigate} from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
     const navigate = useNavigate();
+    const [isOpen, setIsOpen] = useState(false);
+
     const navLinks = [
         { name: "Home", path: "/" },
         { name: "About", path: "/intro" },
@@ -12,62 +16,96 @@ export default function Navbar() {
         { name: "Contact", path: "/contact" },
     ];
 
+    const handleNavigate = (path: string) => {
+        navigate(path);
+        setIsOpen(false);
+    };
+
     return (
-        <header className="p-4 md:p-5 lg:max-w-6xl lg:w-full flex justify-between">
-            <div className="text-white text-lg font-medium m-0 tracking-[4px]" style={{
-                textShadow: `
-      0 0 10px #fff,
-      0 0 20px #00ffff,
-      0 0 30px #0080ff
-    `,
-                fontFamily: "'Orbitron', sans-serif",
-            }}>
-                PHYSICS SOCIETY<br/>University Of Ruhuna
+        <header className="p-4 md:p-5 w-full flex justify-between items-center relative z-50">
+            <div
+                className="text-white text-sm lg:text-lg font-medium tracking-[4px]"
+                style={{
+                    textShadow: `
+                        0 0 10px #fff,
+                        0 0 20px #00ffff,
+                        0 0 30px #0080ff
+                    `,
+                    fontFamily: "'Orbitron', sans-serif",
+                }}
+            >
+                PHYSICS SOCIETY<br />University Of Ruhuna
             </div>
-        <nav className="hidden lg:flex gap-10">
-            {navLinks.map((button) => (
-                <button
-                    key={button.name}
-                    style={{
-                        padding: "10px 20px",
-                        background: "rgba(0, 180, 255, 0.15)",
-                        color: "rgba(200, 255, 255, 0.9)",
-                        border: "1px solid rgba(0, 255, 255, 0.3)",
-                        borderRadius: "12px",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        transition: "all 0.25s ease",
-                        backdropFilter: "blur(4px)",
-                        transform: "translateY(0)",
-                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "rgba(0, 200, 255, 0.3)";
-                        e.currentTarget.style.color = "#ffffff";
-                        e.currentTarget.style.transform = "translateY(-2px)";
-                        e.currentTarget.style.boxShadow =
-                            "0 4px 8px rgba(0, 200, 255, 0.2)";
-                        e.currentTarget.style.borderColor = "rgba(0, 255, 255, 0.6)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "rgba(0, 180, 255, 0.15)";
-                        e.currentTarget.style.color = "rgba(200, 255, 255, 0.9)";
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
-                        e.currentTarget.style.borderColor = "rgba(0, 255, 255, 0.3)";
-                    }}
-                    onMouseDown={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow =
-                            "0 2px 4px rgba(0, 200, 255, 0.1)";
-                    }}
-                    onClick={() => navigate(button.path)}
-                >
-                    {button.name}
+
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex gap-10">
+                {navLinks.map((link) => (
+                    <button
+                        key={link.name}
+                        onClick={() => handleNavigate(link.path)}
+                        className="px-4 py-2 text-sm rounded-xl font-medium backdrop-blur border border-cyan-300 text-cyan-100 hover:text-white hover:bg-cyan-500/20 hover:shadow-md transition-all"
+                    >
+                        {link.name}
+                    </button>
+                ))}
+            </nav>
+
+            {/* Mobile Menu Icon */}
+            <div className="lg:hidden">
+                <button onClick={() => setIsOpen(true)} className="text-white">
+                    <Menu size={28} />
                 </button>
-            ))}
-        </nav>
-    </header>
-    )
+            </div>
+
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        className="fixed inset-0 bg-black/90 backdrop-blur-lg z-40 flex flex-col justify-center items-center"
+                        initial={{ opacity: 0, y: -30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -30 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <button
+                            className="absolute top-6 right-6 text-white"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            <X size={32} />
+                        </button>
+                        <motion.ul
+                            className="space-y-8 text-white text-2xl font-semibold text-center"
+                            initial="hidden"
+                            animate="visible"
+                            variants={{
+                                hidden: {},
+                                visible: {
+                                    transition: {
+                                        staggerChildren: 0.1,
+                                    },
+                                },
+                            }}
+                        >
+                            {navLinks.map((link) => (
+                                <motion.li
+                                    key={link.name}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 20 },
+                                        visible: { opacity: 1, y: 0 },
+                                    }}
+                                >
+                                    <button
+                                        onClick={() => handleNavigate(link.path)}
+                                        className="hover:text-cyan-300 transition-colors"
+                                    >
+                                        {link.name}
+                                    </button>
+                                </motion.li>
+                            ))}
+                        </motion.ul>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </header>
+    );
 }
