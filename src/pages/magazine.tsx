@@ -1,17 +1,62 @@
-export default function Magazine(){
+
+import { useState, useEffect } from "react";
+import { PageTitle } from "../../components/page-title";
+import { PDFViewer } from "../../components/PDF-viewer";
+import { motion } from "framer-motion";
+
+const issues = [
+    {
+        id: "spring-2025",
+        title: "Spring 2025",
+        path: "/magazine/spring-2025",
+        totalPages: 12,
+        description: "Featuring an interview with Nobel Prize winner Dr. James Wilson and articles on quantum entanglement breakthroughs."
+    },
+    {
+        id: "winter-2024",
+        title: "Winter 2024",
+        path: "/magazine/winter-2024",
+        totalPages: 10,
+        description: "Special edition on astrophysics discoveries with guest contributions from NASA researchers."
+    },
+    {
+        id: "fall-2024",
+        title: "Fall 2024",
+        path: "/magazine/fall-2024",
+        totalPages: 8,
+        description: "Focusing on undergraduate research projects and the latest department updates."
+    }
+];
+
+export default function MagazinePage() {
+    const [selectedIssue, setSelectedIssue] = useState(issues[0].id);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const currentIssue = issues.find(issue => issue.id === selectedIssue) || issues[0];
+
+    if (!mounted) return null;
+
     return (
-        <div className="wrapper">
-            <div className="flex flex-col space-y-4">
-                <h1 className="font-bold text-3xl underline">The Horizon Magazine Revival</h1>
-                <p>We are thrilled to announce the revival of The Horizon Magazine, our very own Physics Society magazine, making its comeback after a 28-year hiatus since its last publication in 1996. This historic return allows both students and faculty members to contribute their articles, artistic works, and other creative content, offering a platform to share knowledge, ideas, and artistic expression within the Physics Society.</p>
-                <p>
-                    The magazine’s previous edition was published by Prof. G. D. K. Mahanama when he was a student, marking a memorable chapter in the society’s history. With its revival, The Horizon promises to be an exciting avenue for creativity and academic collaboration, enriching the society’s legacy.</p>
-            </div>
-            <div className="flex items-center justify-center mt-8">
-                <button className='bg-white text-black rounded-full py-2 px-4 font-bold'>
-                    View Magazine
-                </button>
-            </div>
+        <div className="container mx-auto px-4 py-16">
+            <PageTitle
+                title="Physics Magazine"
+                subtitle="Our quarterly publication showcasing research, interviews, and physics news"
+            />
+
+            <motion.div
+                className="mt-8 max-w-4xl mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <div className="bg-card rounded-lg p-6 shadow-lg border">
+                    <PDFViewer totalPages={currentIssue.totalPages} />
+                </div>
+            </motion.div>
         </div>
-    )
+    );
 }

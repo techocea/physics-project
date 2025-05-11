@@ -1,53 +1,88 @@
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger} from "./ui/dialog";
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 //@ts-ignore
 import test from "../public/test.jpg";
+import React, {useState} from "react";
+import { Card, CardContent } from "./ui/card";
+import { Calendar } from "lucide-react";
+import { motion } from "framer-motion";
+import {Button} from "./ui/button";
 
-interface itemProps {
-    item:{
-        title:string;
-        date:string;
-        author:string;
-        meetingInfo:string[];
-    }
+export interface EventType {
+    id: string;
+    title: string;
+    date: string;
+    location: string;
+    meetingInfo: string[];
+    image: string;
 }
 
-export default function NewsCard({item}:itemProps){
+interface EventCardProps {
+    event: EventType;
+    index: number;
+}
+
+export default function NewsCard({ event, index }: EventCardProps){
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
     return (
-        <div className="card-body">
-            <div className="relative rounded-tl-md rounded-tr-md h-28 lg:h-38 w-full overflow-hidden">
-            <img src={test} alt={"HORIZON"} className="absolute top-0 left-0 hover:scale-105 transition-all duration-400 rounded-tl-md rounded-tr-md p-0"/>
-            </div>
-            <div className="flex flex-col gap-2 p-4">
-                <h3 className="font-bold text-xl truncate">{item.title}</h3>
-                <div className="flex justify-between w-full">
-                    <p className="font-semibold text-sm">Author: </p><span className="text-sm text-muted-foreground">Admin</span>
-                </div>
-                <div className="flex justify-between w-full">
-                    <p className="font-semibold text-sm">Published: </p><span className="text-sm text-muted-foreground">{item.date}</span>
-                </div>
-                <Dialog>
-                    <DialogTrigger className="w-full bg-white text-black rounded-md py-2 font-bold text-xl cursor-pointer">Read More</DialogTrigger>
-                    <DialogContent className="my-10 h-[500px] overflow-y-auto p-0">
-                        <DialogHeader>
-                            <img src={test} alt={"HORIZON"} className="rounded-tl-md rounded-tr-md"/>
-                            <DialogDescription className="py-2 px-4">
-                                <div>
-                                    <h3 className="font-bold text-2xl text-black">{item.title}</h3>
-                                    <div className="mt-4 flex flex-col lg:flex-row lg:justify-between lg:w-full">
-                                    <p className="font-semibold text-black text-sm">Author:<span
-                                    className="text-sm text-black">Admin</span></p>
-                                    <p className="font-semibold text-black text-sm">Published: <span
-                                        className="text-sm text-black">{item.date}</span></p>
-                                    </div>
-                                    {item.meetingInfo.map((info:string,idx:number)=>(
-                                    <p key={idx} className="pt-4 text-black">{info}</p>
-                                        ))}
-                                </div>
-                            </DialogDescription>
-                        </DialogHeader>
-                    </DialogContent>
-                </Dialog>
-            </div>
-        </div>
-    )
+        <>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+                <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow group">
+                    <div className="relative h-48 w-full overflow-hidden">
+                        <img
+                            src={test}
+                            alt={event.title}
+                            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/70 text-white px-2 py-1 rounded-md text-sm">
+                            <Calendar className="h-4 w-4" />
+                            {/*<span>{formatDate(event.date)}</span>*/}
+                        </div>
+                    </div>
+                    <CardContent className="p-4 flex flex-col justify-between h-[calc(100%-12rem)]">
+                        <div>
+                            <h3 className="text-xl font-bold mb-2">{event.title}</h3>
+                        </div>
+                        <Button onClick={() => setIsDialogOpen(true)} className="w-full">
+                            View Details
+                        </Button>
+                    </CardContent>
+                </Card>
+            </motion.div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="max-w-2xl max-h-[640px] py-8 overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl text-black">{event.title}</DialogTitle>
+                        <DialogDescription className="flex items-center gap-2 text-primary">
+                            <Calendar className="h-4 w-4" />
+                            {/*{formatDate(event.date)} • {event.location}*/}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="relative h-64 w-full my-4">
+                        <img
+                            src={test}
+                            alt={event.title}
+                            className="object-cover rounded-md"
+                            sizes="(max-width: 768px) 100vw, 800px"
+                        />
+                    </div>
+
+                    <div className="space-y-4 max-h-[40vh]">
+                        {event.meetingInfo.map((paragraph:string, i:number) => (
+                            <p key={i} className="text-black">{paragraph}</p>
+                        ))}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
 }

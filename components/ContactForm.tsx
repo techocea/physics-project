@@ -1,6 +1,6 @@
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
+import {Label} from "./ui/label";
+import {Input} from "./ui/input";
+import {Textarea} from "./ui/textarea";
 import {SendHorizonal} from "lucide-react";
 import {FormEvent, useState} from "react";
 

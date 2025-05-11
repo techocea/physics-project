@@ -6,7 +6,7 @@ export default function Events(){
         <div className="wrapper">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-10">
             {NEWS_DATA.slice(0,8).map((item:any)=>(
-            <NewsCard item={item} key={item.id}/>
+            <NewsCard event={item} index={item.id}/>
             ))}
         </div>
         </div>
